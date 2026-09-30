@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0">
+    <title>FreshGuard AI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body { background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        /* ═══════════════════════════════════════ APP SHELL ═══════════════════════════════════════ */
+        .phone-shell {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 44px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e;
+        }
+
+        /* ═══════════════════════════════════════ SCREENS ═══════════════════════════════════════ */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .screen.active {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        .screen.exit-left {
+            transform: translateX(-30%);
+            opacity: 0;
+        }
+
+        /* ═══════════════════════════════════════ STATUS BAR ═══════════════════════════════════════ */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-bar.dark { color: white; }
+        .status-bar.light { color: #24292f; }
+
+        /* ═══════════════════════════════════════ NAV BAR ═══════════════════════════════════════ */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px 12px;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .nav-bar.dark { color: white; }
+        .nav-bar.light { color: #24292f; border-bottom: 1px solid #eaecef; }
+        .nav-bar.green { background: #1a7f37; color: white; }
+        .back-btn { font-size: 22px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; }
+        .back-btn:active { background: rgba(255,255,255,0.2); }
+
+        /* ══════════════════════════════ SCREEN 1: CAPTURE ══════════════════════════════ */
+        #capture-screen { background: #0a0a0a; }
+        #capture-screen .status-bar { color: white; }
+
+        .camera-view {
+            flex: 1;
+            position: relative;
+            margin: 10px 20px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: 
+                linear-gradient(135deg, #1a3a1a 0%, #2d5a27 30%, #1a4a1a 60%, #0d2e0d 100%);
+        }
+
+        /* Fake fruit in camera */
+        .camera-fruit {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 130px;
+            background: radial-gradient(circle at 35% 35%, #8BC34A, #4CAF50, #2E7D32);
+            border-radius: 50% 50% 48% 52% / 50% 50% 55% 45%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4), inset -10px -10px 20px rgba(0,0,0,0.2);
+        }
+        .camera-fruit::after {
+            content: '';
+            position: absolute;
+            top: -18px;
+            left: 52%;
+            width: 6px;
+            height: 22px;
+            background: #5D4037;
+            border-radius: 3px;
+            transform: rotate(10deg);
+        }
+        .camera-fruit::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 30px;
+            height: 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        /* Camera overlay / background scene */
+        .camera-scene {
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(255,255,255,0.03) 0%, transparent 50%),
+                linear-gradient(180deg, #1a3a1a 0%, #2d5a27 40%, #1c3d1c 100%);
+        }
+
+        /* Scan frame corners */
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+        }
+        .corner {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-color: #4ade80;
+            border-style: solid;
+        }
+        .corner.tl { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+        .corner.tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+        .corner.bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+        .corner.br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+        .scan-line {
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4ade80, transparent);
+            box-shadow: 0 0 8px #4ade80;
+            animation: scan 2s ease-in-out infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Scanning overlay (shown when scanning) */
+        .scanning-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .scanning-overlay.visible { opacity: 1; pointer-events: all; }
+        .scanning-ring {
+            width: 80px; height: 80px;
+            border: 3px solid rgba(74,222,128,0.3);
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .scanning-text { color: white; font-size: 16px; font-weight: 600; }
+
+        .camera-bottom {
+            padding: 20px 20px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+        }
+
+        .capture-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .capture-btn:active { transform: scale(0.92); }
+        .capture-btn-inner {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .scan-hint {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            text-align: center;
+            padding-bottom: 8px;
+        }
+
+        /* ══════════════════════════════ SCREEN 2: RESULT (FRESH) ══════════════════════════════ */
+        #result-screen { background: white; }
+
+        .result-fruit-banner {
+            height: 260px;
+            background: linear-gradient(180deg, #d4edda 0%, #a8e6b4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .result-fruit-banner::before {
+            content: '';
+            position: absolute;
+            top: -30px; left: -30px;
+            width: 160px; height: 160px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+        .result-fruit-3d {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at 35% 35%, #a5d65f, #4CAF50, #2E7D32);
+            border-radius: 50% 50% 48% 52% / 50% 50% 55% 45%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2), inset -15px -15px 30px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .result-fruit-3d::after {
+            content: '';
+            position: absolute;
+            top: -22px; left: 54%;
+            width: 7px; height: 26px;
+            background: #5D4037;
+            border-radius: 4px;
+            transform: rotate(10deg);
+        }
+        .result-fruit-3d::before {
+            content: '';
+            position: absolute;
+            top: 22px; left: 22px;
+            width: 36px; height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        .result-content { padding: 20px; flex: 1; overflow-y: auto; }
+
+        .verdict-card {
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .verdict-card.fresh { background: #d1fae5; border: 2px solid #6ee7b7; }
+        .verdict-card.rotten { background: #fee2e2; border: 2px solid #fca5a5; }
+        .verdict-card.uncertain { background: #fef3c7; border: 2px solid #fcd34d; }
+
+        .verdict-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .verdict-icon.fresh { background: #059669; }
+        .verdict-icon.rotten { background: #dc2626; }
+
+        .verdict-text h2 { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
+        .verdict-text h2.fresh { color: #065f46; }
+        .verdict-text h2.rotten { color: #991b1b; }
+        .verdict-text p { font-size: 14px; color: #6b7280; margin-top: 2px; }
+
+        .info-card {
+            background: #f9fafb;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #6b7280; font-size: 14px; }
+        .info-value { font-weight: 600; font-size: 14px; color: #111827; }
+
+        .confidence-bar-wrap { margin-bottom: 16px; }
+        .confidence-label { display: flex; justify-content: space-between; font-size: 13px; color: #6b7280; margin-bottom: 6px; }
+        .confidence-bar { height: 8px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+        .confidence-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #34d399, #059669); transition: width 1s ease; }
+
+        /* ══════════════════════════════ SCREEN 3: ABSTAIN ══════════════════════════════ */
+        #abstain-screen { background: white; }
+
+        .abstain-fruit-banner {
+            height: 260px;
+            background: linear-gradient(180deg, #1c1c1c 0%, #2d2d2d 100%);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .abstain-fruit-3d {
+            width: 140px; height: 140px;
+            background: radial-gradient(circle at 35% 35%, #ff9f4a, #F97316, #c2410c);
+            border-radius: 50%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset -15px -15px 30px rgba(0,0,0,0.2);
+            filter: blur(1.5px) brightness(0.7);
+        }
+        .blur-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(1px);
+        }
+        .uncertain-badge {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: rgba(255, 193, 7, 0.9);
+            color: #7c4800;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 99px;
+        }
+
+        .abstain-content { padding: 20px; flex: 1; }
+
+        .warning-card {
+            background: #fffbeb;
+            border: 1.5px solid #f59e0b;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .warning-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .warning-icon { font-size: 28px; }
+        .warning-title { font-weight: 700; font-size: 18px; color: #92400e; }
+        .warning-body { color: #78350f; font-size: 14px; line-height: 1.6; }
+
+        .confidence-low {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+        .conf-num { font-size: 28px; font-weight: 800; color: #dc2626; }
+        .conf-label { font-size: 13px; color: #6b7280; }
+        .conf-label strong { display: block; font-size: 14px; color: #374151; }
+
+        /* ══════════════════════════════ SCREEN 4: TRACKER ══════════════════════════════ */
+        #tracker-screen { background: #f3f4f6; }
+        #tracker-screen .nav-bar { background: #15803d; }
+
+        .tracker-content { flex: 1; overflow-y: auto; padding: 16px; }
+
+        .batch-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .batch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .batch-title { font-weight: 700; font-size: 15px; }
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 99px;
+        }
+        .status-pill.active { background: #d1fae5; color: #065f46; }
+        .status-pill.critical { background: #fee2e2; color: #991b1b; }
+
+        .timeline { padding-left: 8px; }
+        .tl-item {
+            display: flex;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 14px;
+        }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-item::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 16px;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        .tl-item:last-child::before { display: none; }
+        .tl-dot {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            box-shadow: 0 0 0 3px white, 0 0 0 4px currentColor;
+        }
+        .tl-dot.green { background: #059669; color: #059669; box-shadow: 0 0 0 3px white, 0 0 0 5px #d1fae5; }
+        .tl-dot.amber { background: #d97706; color: #d97706; box-shadow: 0 0 0 3px white, 0 0 0 5px #fef3c7; }
+        .tl-dot.red { background: #dc2626; color: #dc2626; box-shadow: 0 0 0 3px white, 0 0 0 5px #fee2e2; }
+        .tl-text { flex: 1; }
+        .tl-time { font-size: 11px; color: #9ca3af; margin-bottom: 2px; }
+        .tl-desc { font-size: 13px; color: #374151; font-weight: 500; }
+        .tl-score { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+        .gru-badge {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 99px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ══════════════════════════════ SHARED BUTTONS ══════════════════════════════ */
+        .btn-area { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn-primary {
+            padding: 16px;
+            background: #15803d;
+            color: white;
+            text-align: center;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .btn-primary:active { transform: scale(0.97); background: #166534; }
+
+        .btn-secondary {
+            padding: 16px;
+            background: #f3f4f6;
+            color: #374151;
+            text-align: center;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1.5px solid #e5e7eb;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+        .btn-secondary:active { transform: scale(0.97); }
+
+        .btn-danger {
+            padding: 16px;
+            background: #dc2626;
+            color: white;
+            text-align: center;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+        .btn-danger:active { transform: scale(0.97); }
+
+        /* Bottom nav for home screen */
+        .bottom-nav {
+            display: flex;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 8px 0 16px;
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .nav-icon { font-size: 22px; }
+        .nav-label { font-size: 10px; font-weight: 600; color: #9ca3af; }
+        .nav-item.active .nav-label { color: #15803d; }
+    </style>
+</head>
+<body>
+<div class="phone-shell">
+
+    <!-- ══════ SCREEN 1: CAPTURE ══════ -->
+    <div class="screen active" id="capture-screen">
+        <div class="status-bar dark">
+            <span>9:41</span>
+            <span>📶 🔋</span>
+        </div>
+        <div class="nav-bar dark">
+            <div style="width:40px"></div>
+            <span>Scan Fruit</span>
+            <span style="font-size:20px">⚙️</span>
+        </div>
+
+        <div class="camera-view">
+            <div class="camera-scene"></div>
+            <div class="camera-fruit"></div>
+            <div class="scan-frame">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+                <div class="scan-line"></div>
+            </div>
+            <div class="scanning-overlay" id="scanning-overlay">
+                <div class="scanning-ring"></div>
+                <div class="scanning-text">Analysing freshness…</div>
+            </div>
+        </div>
+
+        <div class="scan-hint">Position the fruit inside the frame</div>
+        <div class="camera-bottom">
+            <div class="capture-btn" id="capture-btn" onclick="doScan()">
+                <div class="capture-btn-inner"></div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="goto('capture-screen')">
+                <div class="nav-icon">📷</div>
+                <div class="nav-label">Scanner</div>
+            </div>
+            <div class="nav-item" onclick="goto('tracker-screen')">
+                <div class="nav-icon">📊</div>
+                <div class="nav-label">Tracker</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════ SCREEN 2: RESULT (FRESH) ══════ -->
+    <div class="screen" id="result-screen">
+        <div class="status-bar light">
+            <span>9:41</span>
+            <span>📶 🔋</span>
+        </div>
+        <div class="nav-bar light">
+            <span class="back-btn" onclick="goto('capture-screen')">←</span>
+            <span>Result</span>
+            <span style="width:40px"></span>
+        </div>
+
+        <div class="result-fruit-banner">
+            <div class="result-fruit-3d"></div>
+        </div>
+
+        <div class="result-content">
+            <div class="verdict-card fresh">
+                <div class="verdict-icon fresh">✓</div>
+                <div class="verdict-text">
+                    <h2 class="fresh">FRESH</h2>
+                    <p>Safe to consume</p>
+                </div>
+            </div>
+
+            <div class="confidence-bar-wrap">
+                <div class="confidence-label"><span>Confidence</span><span id="conf-value">98.4%</span></div>
+                <div class="confidence-bar"><div class="confidence-fill" id="conf-fill" style="width: 98.4%"></div></div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-row"><span class="info-label">Item</span><span class="info-value">Apple (Granny Smith)</span></div>
+                <div class="info-row"><span class="info-label">Est. Shelf Life</span><span class="info-value">5–7 Days</span></div>
+                <div class="info-row"><span class="info-label">Safety Score</span><span class="info-value">9.8 / 10</span></div>
+                <div class="info-row"><span class="info-label">Model</span><span class="info-value">Attention-CNN v1</span></div>
+            </div>
+        </div>
+
+        <div class="btn-area">
+            <button class="btn-primary" onclick="goto('capture-screen')">📷 Scan Another</button>
+            <button class="btn-secondary" onclick="goto('tracker-screen')">📊 View Timeline</button>
+        </div>
+    </div>
+
+    <!-- ══════ SCREEN 3: ABSTAIN ══════ -->
+    <div class="screen" id="abstain-screen">
+        <div class="status-bar light">
+            <span>9:41</span>
+            <span>📶 🔋</span>
+        </div>
+        <div class="nav-bar light">
+            <span class="back-btn" onclick="goto('capture-screen')">←</span>
+            <span>Safety Fallback</span>
+            <span style="width:40px"></span>
+        </div>
+
+        <div class="abstain-fruit-banner">
+            <div class="abstain-fruit-3d"></div>
+            <div class="blur-overlay"></div>
+            <div class="uncertain-badge">⚠ LOW CONFIDENCE</div>
+        </div>
+
+        <div class="abstain-content">
+            <div class="confidence-low">
+                <div class="conf-num">45%</div>
+                <div>
+                    <div class="conf-label">
+                        <strong>Confidence Score</strong>
+                        Minimum required: 60%
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <div class="warning-header">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-title">UNCERTAIN RESULT</div>
+                </div>
+                <div class="warning-body">
+                    The AI has abstained. Confidence is too low — this may be caused by poor lighting, an unusual angle, or an unrecognized item. For food safety, manual inspection is required.
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-area">
+            <button class="btn-primary" onclick="goto('capture-screen')">📷 Retake Photo</button>
+            <button class="btn-danger" onclick="goto('capture-screen')">⚠️ Manual Override (Rotten)</button>
+        </div>
+    </div>
+
+    <!-- ══════ SCREEN 4: TRACKER ══════ -->
+    <div class="screen" id="tracker-screen">
+        <div class="status-bar" style="background:#15803d; color:white;">
+            <span>9:41</span>
+            <span>📶 🔋</span>
+        </div>
+        <div class="nav-bar green">
+            <span class="back-btn" onclick="goto('capture-screen')">←</span>
+            <div style="display:flex;align-items:center;gap:8px">
+                Quality Tracker
+                <span class="gru-badge">GRU v2</span>
+            </div>
+            <span style="width:40px"></span>
+        </div>
+
+        <div class="tracker-content">
+            <!-- Batch 1 -->
+            <div class="batch-card">
+                <div class="batch-header">
+                    <div class="batch-title">🍎 Batch #4092 — Apples</div>
+                    <div class="status-pill active">● Active</div>
+                </div>
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot green"></div>
+                        <div class="tl-text">
+                            <div class="tl-time">Today, 08:30 AM</div>
+                            <div class="tl-desc">Freshness stable. No action needed.</div>
+                            <div class="tl-score">GRU Score: 9.2 / 10</div>
+                        </div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot green"></div>
+                        <div class="tl-text">
+                            <div class="tl-time">Yesterday, 06:15 PM</div>
+                            <div class="tl-desc">Initial scan logged upon entry.</div>
+                            <div class="tl-score">GRU Score: 9.8 / 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch 2 -->
+            <div class="batch-card">
+                <div class="batch-header">
+                    <div class="batch-title">🍌 Batch #4088 — Bananas</div>
+                    <div class="status-pill critical">● Critical</div>
+                </div>
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot red"></div>
+                        <div class="tl-text">
+                            <div class="tl-time">Today, 09:00 AM</div>
+                            <div class="tl-desc">Spoilage detected. Remove from shelf.</div>
+                            <div class="tl-score">GRU Score: 2.1 / 10</div>
+                        </div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot amber"></div>
+                        <div class="tl-text">
+                            <div class="tl-time">Yesterday, 08:00 AM</div>
+                            <div class="tl-desc">Early bruising pattern identified.</div>
+                            <div class="tl-score">GRU Score: 6.5 / 10</div>
+                        </div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot green"></div>
+                        <div class="tl-text">
+                            <div class="tl-time">2 days ago, 07:30 AM</div>
+                            <div class="tl-desc">Initial scan logged upon entry.</div>
+                            <div class="tl-score">GRU Score: 9.4 / 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch 3 -->
+            <div class="batch-card">
+                <div class="batch-header">
+                    <div class="batch-title">🍊 Batch #4091 — Oranges</div>
+                    <div class="status-pill active">● Active</div>
+                </div>
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-dot green"></div>
+                        <div class="tl-text">
+                            <div class="tl-time">Today, 10:00 AM</div>
+                            <div class="tl-desc">Freshness excellent.</div>
+                            <div class="tl-score">GRU Score: 9.6 / 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-area">
+            <button class="btn-primary" onclick="goto('capture-screen')">📷 New Scan</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let currentScreen = 'capture-screen';
+
+    function goto(screenId) {
+        if (screenId === currentScreen) return;
+
+        const current = document.getElementById(currentScreen);
+        const next = document.getElementById(screenId);
+
+        // Exit current
+        current.classList.remove('active');
+        current.classList.add('exit-left');
+        setTimeout(() => { current.classList.remove('exit-left'); }, 400);
+
+        // Enter next
+        next.classList.add('active');
+        currentScreen = screenId;
+    }
+
+    function doScan() {
+        const overlay = document.getElementById('scanning-overlay');
+        overlay.classList.add('visible');
+
+        // Simulate AI analysis: 1.8s scan then show result (alternates Fresh/Abstain)
+        const showAbstain = Math.random() < 0.25; // 25% chance of abstain
+
+        setTimeout(() => {
+            overlay.classList.remove('visible');
+            if (showAbstain) {
+                goto('abstain-screen');
+            } else {
+                // Randomize confidence slightly for realism
+                const conf = (94 + Math.random() * 5).toFixed(1);
+                document.getElementById('conf-value').textContent = conf + '%';
+                document.getElementById('conf-fill').style.width = conf + '%';
+                goto('result-screen');
+            }
+        }, 1800);
+    }
+</script>
+</body>
+</html>

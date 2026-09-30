@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=375, initial-scale=1.0">
+    <title>FreshGuard AI - Abstain Screen</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f6f8fa; color: #24292f; display: flex; justify-content: center; height: 100vh; align-items: center; }
+        .app-container { width: 375px; height: 812px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .header { padding: 40px 20px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 18px; border-bottom: 1px solid #eaecef; }
+        .image-container { width: 100%; height: 300px; background: url('https://images.unsplash.com/photo-1582979512210-99b6a53385f9?auto=format&fit=crop&w=375&q=80') center/cover; filter: blur(2px) brightness(0.8); }
+        .content { padding: 30px 20px; flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .warning-card { background: #fff8c5; border: 1px solid #e3b341; border-radius: 12px; padding: 25px 20px; text-align: center; margin-bottom: 30px; width: 100%; }
+        .icon { font-size: 40px; margin-bottom: 10px; }
+        .warning-title { color: #9a6700; font-weight: 700; font-size: 20px; margin-bottom: 10px; }
+        .warning-text { color: #57606a; font-size: 14px; line-height: 1.5; }
+        .btn { width: 100%; padding: 16px; background: #2ea043; color: white; text-align: center; border-radius: 12px; font-weight: 600; font-size: 16px; text-decoration: none; margin-bottom: 15px; }
+        .btn-danger { background: #cf222e; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div>🔙</div>
+            <div>Safety Fallback</div>
+            <div></div>
+        </div>
+        <div class="image-container"></div>
+        <div class="content">
+            <div class="warning-card">
+                <div class="icon">⚠️</div>
+                <div class="warning-title">UNCERTAIN RESULT</div>
+                <div class="warning-text">Confidence too low (45%). Lighting or angle may be poor. For food safety, the AI has abstained. Manual inspection is required.</div>
+            </div>
+            
+            <a href="#" class="btn">Retake Photo</a>
+            <a href="#" class="btn btn-danger">Manual Override (Rotten)</a>
+        </div>
+    </div>
+</body>
+</html>

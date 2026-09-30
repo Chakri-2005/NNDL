@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=375, initial-scale=1.0">
+    <title>FreshGuard AI - Result Screen</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f6f8fa; color: #24292f; display: flex; justify-content: center; height: 100vh; align-items: center; }
+        .app-container { width: 375px; height: 812px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .header { padding: 40px 20px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 18px; border-bottom: 1px solid #eaecef; }
+        .image-container { width: 100%; height: 300px; background: url('https://images.unsplash.com/photo-1560806887-1e4cd0b6fac6?auto=format&fit=crop&w=375&q=80') center/cover; }
+        .content { padding: 30px 20px; flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .status-badge { background: #dafbe1; color: #1a7f37; padding: 15px 40px; border-radius: 30px; font-size: 28px; font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .confidence { font-size: 16px; color: #57606a; margin-bottom: 30px; }
+        .details { width: 100%; background: #f6f8fa; border-radius: 12px; padding: 20px; margin-bottom: 30px; }
+        .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eaecef; }
+        .detail-row:last-child { border-bottom: none; }
+        .label { color: #57606a; font-size: 14px; }
+        .value { font-weight: 600; font-size: 14px; }
+        .btn { width: 100%; padding: 16px; background: #2ea043; color: white; text-align: center; border-radius: 12px; font-weight: 600; font-size: 16px; text-decoration: none; margin-bottom: 15px; }
+        .btn-secondary { background: #f6f8fa; color: #24292f; border: 1px solid #d0d7de; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div>🔙</div>
+            <div>Result</div>
+            <div></div>
+        </div>
+        <div class="image-container"></div>
+        <div class="content">
+            <div class="status-badge">✅ FRESH</div>
+            <div class="confidence">Confidence: 98.4%</div>
+            
+            <div class="details">
+                <div class="detail-row"><span class="label">Item</span><span class="value">Apple (Granny Smith)</span></div>
+                <div class="detail-row"><span class="label">Est. Shelf Life</span><span class="value">5-7 Days</span></div>
+                <div class="detail-row"><span class="label">Safety Score</span><span class="value">9.8 / 10</span></div>
+            </div>
+            
+            <a href="#" class="btn">Scan Another</a>
+            <a href="#" class="btn btn-secondary">View Timeline</a>
+        </div>
+    </div>
+</body>
+</html>

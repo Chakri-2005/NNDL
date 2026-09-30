@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FreshGuard AI — Scan Fruit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --green:       #10b981;
+      --green-dark:  #059669;
+      --green-glow:  rgba(16,185,129,.35);
+      --red:         #ef4444;
+      --red-dark:    #dc2626;
+      --red-glow:    rgba(239,68,68,.35);
+      --amber:       #f59e0b;
+      --bg:          #0a0f0a;
+      --surface:     #111811;
+      --card:        #182018;
+      --border:      rgba(255,255,255,.08);
+      --text:        #f0fdf4;
+      --muted:       #6b7280;
+    }
+
+    html, body {
+      min-height: 100%; background: var(--bg);
+      font-family: 'Inter', sans-serif; color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; padding: 22px 20px 14px;
+      background: linear-gradient(180deg, #0d1a0d 0%, transparent 100%);
+    }
+    .logo-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 10px var(--green);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.4); opacity: .7; }
+    }
+    .header h1 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+    .header h1 span { color: var(--green); }
+
+    /* ── SCAN ZONE ── */
+    .scan-zone {
+      margin: 10px 20px 0;
+      border: 2px dashed rgba(16,185,129,.3);
+      border-radius: 24px;
+      min-height: 280px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      background: var(--card);
+      transition: border-color .3s, background .3s;
+    }
+    .scan-zone.has-image { border-style: solid; border-color: var(--green); }
+
+    /* corner accents */
+    .corner { position: absolute; width: 24px; height: 24px; border-color: var(--green); border-style: solid; opacity: .6; }
+    .corner.tl { top: 12px; left: 12px;  border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+    .corner.tr { top: 12px; right: 12px; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+    .corner.bl { bottom: 12px; left: 12px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+    .corner.br { bottom: 12px; right: 12px; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+
+    /* scan line */
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      animation: scanline 2.5s ease-in-out infinite;
+      opacity: .7;
+    }
+    @keyframes scanline {
+      0%   { top: 15%; }
+      50%  { top: 85%; }
+      100% { top: 15%; }
+    }
+
+    #preview-img {
+      width: 100%; height: 100%; object-fit: cover;
+      border-radius: 22px; display: none;
+    }
+    .placeholder-text {
+      text-align: center; padding: 20px;
+    }
+    .placeholder-text .icon { font-size: 52px; margin-bottom: 12px; opacity: .5; }
+    .placeholder-text p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    /* ── BUTTON ── */
+    .btn-wrap { padding: 20px 20px 0; }
+
+    label.capture-btn, .retake-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 18px;
+      border-radius: 16px; font-size: 17px; font-weight: 700;
+      cursor: pointer; border: none; outline: none;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+      user-select: none;
+    }
+    label.capture-btn {
+      background: linear-gradient(135deg, var(--green-dark), #34d399);
+      color: #fff;
+      box-shadow: 0 6px 24px var(--green-glow);
+    }
+    label.capture-btn:active { transform: scale(.97); opacity: .9; }
+    #file-input { display: none; }
+
+    .retake-btn {
+      background: var(--card); color: var(--muted);
+      border: 1px solid var(--border);
+      margin-top: 12px; font-size: 15px;
+      display: none;
+    }
+    .retake-btn:active { transform: scale(.97); }
+
+    /* ── ANALYZE BTN ── */
+    .analyze-btn {
+      display: none; width: calc(100% - 40px); margin: 12px 20px 0;
+      padding: 18px; border-radius: 16px; border: none;
+      background: linear-gradient(135deg, #1d4ed8, #6366f1);
+      color: #fff; font-size: 17px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 6px 24px rgba(99,102,241,.3);
+      transition: transform .15s, opacity .15s;
+    }
+    .analyze-btn:active { transform: scale(.97); opacity: .9; }
+
+    /* ── LOADER ── */
+    .loader {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; padding: 40px 20px; gap: 16px;
+    }
+    .spinner {
+      width: 52px; height: 52px;
+      border: 4px solid rgba(16,185,129,.2);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader p { color: var(--muted); font-size: 14px; }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+      display: none; margin: 20px;
+      background: var(--card); border-radius: 24px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      animation: slideUp .4s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .verdict-banner {
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .verdict-icon  { font-size: 48px; margin-bottom: 8px; }
+    .verdict-label { font-size: 32px; font-weight: 900; letter-spacing: 1px; }
+    .verdict-fruit { font-size: 16px; color: rgba(255,255,255,.6); margin-top: 4px; font-weight: 500; }
+
+    /* confidence bar */
+    .conf-wrap { padding: 0 20px 20px; }
+    .conf-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    .conf-track { height: 10px; background: rgba(255,255,255,.07); border-radius: 999px; overflow: hidden; }
+    .conf-fill  { height: 100%; border-radius: 999px; transition: width 1s ease; width: 0; }
+
+    /* detail rows */
+    .details { border-top: 1px solid var(--border); padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .detail-row .lbl { color: var(--muted); }
+    .detail-row .val { font-weight: 600; }
+
+    /* prob bars */
+    .prob-section { border-top: 1px solid var(--border); padding: 16px 20px; }
+    .prob-title { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+    .prob-row { margin-bottom: 10px; }
+    .prob-name { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+    .prob-track { height: 6px; background: rgba(255,255,255,.07); border-radius: 999px; overflow: hidden; }
+    .prob-fill { height: 100%; border-radius: 999px; transition: width 1s ease; width: 0; }
+
+    /* scan again */
+    .scan-again-btn {
+      display: block; margin: 0 20px 32px;
+      padding: 16px; border-radius: 14px; border: none;
+      background: var(--surface); color: var(--green);
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      border: 1px solid rgba(16,185,129,.25);
+      text-align: center;
+      display: none;
+    }
+    .scan-again-btn:active { transform: scale(.97); }
+
+    /* status chip */
+    .fresh-chip  { background: rgba(16,185,129,.15); }
+    .rotten-chip { background: rgba(239,68,68,.15); }
+    .fresh-fill  { background: linear-gradient(90deg, var(--green-dark), #34d399); }
+    .rotten-fill { background: linear-gradient(90deg, var(--red-dark), #f87171); }
+    .amber-chip  { background: rgba(245,158,11,.15); }
+    .amber-fill  { background: linear-gradient(90deg, #b45309, #fbbf24); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-dot"></div>
+    <h1>Fresh<span>Guard</span> AI</h1>
+  </div>
+
+  <!-- SCAN ZONE -->
+  <div class="scan-zone" id="scan-zone">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+    <div class="scan-line" id="scan-line"></div>
+
+    <img id="preview-img" alt="Captured fruit">
+    <div class="placeholder-text" id="placeholder">
+      <div class="icon">🍎</div>
+      <p>Tap the button below<br>to take a photo with your camera</p>
+    </div>
+  </div>
+
+  <!-- CAPTURE BUTTON -->
+  <div class="btn-wrap">
+    <label class="capture-btn" for="file-input" id="capture-label">
+      📷 &nbsp; Open Camera
+    </label>
+    <input type="file" id="file-input" accept="image/*" capture="environment">
+    <button class="retake-btn" id="retake-btn" onclick="retake()">🔄 &nbsp; Retake Photo</button>
+  </div>
+
+  <!-- ANALYSE BUTTON -->
+  <button class="analyze-btn" id="analyze-btn" onclick="analyze()">
+    🔬 &nbsp; Analyse Freshness
+  </button>
+
+  <!-- LOADER -->
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <p>Running AI analysis…</p>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="result-card" id="result-card">
+    <div class="verdict-banner" id="verdict-banner">
+      <div class="verdict-icon" id="verdict-icon"></div>
+      <div class="verdict-label" id="verdict-label"></div>
+      <div class="verdict-fruit" id="verdict-fruit"></div>
+    </div>
+    <div class="conf-wrap">
+      <div class="conf-label">
+        <span>Confidence</span>
+        <span id="conf-pct">0%</span>
+      </div>
+      <div class="conf-track">
+        <div class="conf-fill" id="conf-fill"></div>
+      </div>
+    </div>
+    <div class="details">
+      <div class="detail-row">
+        <span class="lbl">Detected Item</span>
+        <span class="val" id="det-class">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Status</span>
+        <span class="val" id="det-status">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Model</span>
+        <span class="val">Attention-CNN</span>
+      </div>
+    </div>
+    <div class="prob-section">
+      <div class="prob-title">All Class Probabilities</div>
+      <div id="prob-bars"></div>
+    </div>
+  </div>
+
+  <!-- SCAN AGAIN -->
+  <button class="scan-again-btn" id="scan-again-btn" onclick="retake()">
+    🍊 &nbsp; Scan Another Fruit
+  </button>
+
+  <script>
+    const fileInput   = document.getElementById('file-input');
+    const previewImg  = document.getElementById('preview-img');
+    const placeholder = document.getElementById('placeholder');
+    const scanZone    = document.getElementById('scan-zone');
+    const scanLine    = document.getElementById('scan-line');
+    const captureLabel= document.getElementById('capture-label');
+    const retakeBtn   = document.getElementById('retake-btn');
+    const analyzeBtn  = document.getElementById('analyze-btn');
+    const loader      = document.getElementById('loader');
+    const resultCard  = document.getElementById('result-card');
+    const scanAgainBtn= document.getElementById('scan-again-btn');
+
+    let capturedBase64 = null;
+
+    // ── File selected ─────────────────────────────────────────
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        capturedBase64 = evt.target.result; // data URL
+        previewImg.src = capturedBase64;
+        previewImg.style.display = 'block';
+        placeholder.style.display = 'none';
+        scanLine.style.display = 'none';
+        scanZone.classList.add('has-image');
+        captureLabel.style.display = 'none';
+        retakeBtn.style.display = 'flex';
+        analyzeBtn.style.display = 'block';
+        resultCard.style.display = 'none';
+        scanAgainBtn.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // ── Retake ────────────────────────────────────────────────
+    function retake() {
+      fileInput.value = '';
+      capturedBase64 = null;
+      previewImg.style.display = 'none';
+      previewImg.src = '';
+      placeholder.style.display = 'block';
+      scanLine.style.display = 'block';
+      scanZone.classList.remove('has-image');
+      captureLabel.style.display = 'flex';
+      retakeBtn.style.display = 'none';
+      analyzeBtn.style.display = 'none';
+      resultCard.style.display = 'none';
+      loader.style.display = 'none';
+      scanAgainBtn.style.display = 'none';
+    }
+
+    // ── Analyse ───────────────────────────────────────────────
+    async function analyze() {
+      if (!capturedBase64) return;
+
+      analyzeBtn.style.display = 'none';
+      retakeBtn.style.display = 'none';
+      loader.style.display = 'flex';
+      resultCard.style.display = 'none';
+
+      try {
+        const resp = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: capturedBase64 })
+        });
+
+        if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+        const data = await resp.json();
+        showResult(data);
+      } catch (err) {
+        loader.style.display = 'none';
+        alert('❌ Error: ' + err.message + '\n\nMake sure the Flask server is running.');
+        retakeBtn.style.display = 'flex';
+        analyzeBtn.style.display = 'block';
+      }
+    }
+
+    // ── Show Result ───────────────────────────────────────────
+    function showResult(data) {
+      loader.style.display = 'none';
+
+      const isFresh    = data.verdict === 'FRESH';
+      const isUncertain= data.verdict === 'UNCERTAIN';
+      const chipClass  = isFresh ? 'fresh-chip' : isUncertain ? 'amber-chip' : 'rotten-chip';
+      const fillClass  = isFresh ? 'fresh-fill' : isUncertain ? 'amber-fill' : 'rotten-fill';
+      const bgColor    = isFresh ? 'rgba(16,185,129,.08)' : isUncertain ? 'rgba(245,158,11,.08)' : 'rgba(239,68,68,.08)';
+
+      // Banner
+      document.getElementById('verdict-banner').style.background = bgColor;
+      document.getElementById('verdict-banner').classList.add(chipClass);
+      document.getElementById('verdict-icon').textContent  = data.icon;
+      document.getElementById('verdict-label').textContent = data.verdict;
+      document.getElementById('verdict-label').style.color = data.color;
+      document.getElementById('verdict-fruit').textContent = data.fruit;
+
+      // Confidence
+      const confPct = data.confidence;
+      document.getElementById('conf-pct').textContent = confPct + '%';
+      const fill = document.getElementById('conf-fill');
+      fill.className = 'conf-fill ' + fillClass;
+      setTimeout(() => fill.style.width = confPct + '%', 100);
+
+      // Details
+      document.getElementById('det-class').textContent  = data.class.replace('_', ' ');
+      document.getElementById('det-status').textContent = data.status;
+      document.getElementById('det-status').style.color = data.color;
+
+      // Probability bars
+      const probDiv = document.getElementById('prob-bars');
+      probDiv.innerHTML = '';
+      const probs = data.all_probabilities;
+      const sorted = Object.entries(probs).sort((a,b) => b[1] - a[1]);
+      sorted.forEach(([cls, pct]) => {
+        const isFr = cls.includes('Fresh');
+        const barColor = isFr ? '#10b981' : '#ef4444';
+        probDiv.innerHTML += `
+          <div class="prob-row">
+            <div class="prob-name">
+              <span>${cls.replace('_', ' ')}</span>
+              <span style="color:${barColor};font-weight:700">${pct.toFixed(1)}%</span>
+            </div>
+            <div class="prob-track">
+              <div class="prob-fill" style="background:${barColor};width:0"
+                   data-w="${pct}"></div>
+            </div>
+          </div>`;
+      });
+      // Animate bars
+      setTimeout(() => {
+        document.querySelectorAll('.prob-fill').forEach(el => {
+          el.style.width = el.dataset.w + '%';
+        });
+      }, 150);
+
+      resultCard.style.display = 'block';
+      scanAgainBtn.style.display = 'block';
+      retakeBtn.style.display = 'none';
+
+      // Scroll to result
+      setTimeout(() => resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  </script>
+</body>
+</html>

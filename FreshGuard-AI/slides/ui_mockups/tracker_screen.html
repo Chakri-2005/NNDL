@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=375, initial-scale=1.0">
+    <title>FreshGuard AI - Tracker Screen</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f6f8fa; color: #24292f; display: flex; justify-content: center; height: 100vh; align-items: center; }
+        .app-container { width: 375px; height: 812px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .header { padding: 40px 20px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 18px; border-bottom: 1px solid #eaecef; background: #2ea043; color: white; }
+        .content { padding: 20px; flex: 1; overflow-y: auto; }
+        .batch-card { background: white; border: 1px solid #eaecef; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .batch-title { font-weight: 600; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .timeline { position: relative; padding-left: 20px; border-left: 2px solid #eaecef; }
+        .timeline-item { position: relative; margin-bottom: 15px; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .dot { position: absolute; left: -26px; top: 2px; width: 10px; height: 10px; border-radius: 50%; }
+        .dot-green { background: #2ea043; box-shadow: 0 0 0 3px #dafbe1; }
+        .dot-amber { background: #bf8700; box-shadow: 0 0 0 3px #fff8c5; }
+        .dot-red { background: #cf222e; box-shadow: 0 0 0 3px #ffebe9; }
+        .time { font-size: 12px; color: #57606a; margin-bottom: 2px; }
+        .desc { font-size: 14px; font-weight: 500; }
+        .score { font-size: 12px; color: #57606a; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div>🔙</div>
+            <div>Quality Tracker (GRU v2)</div>
+            <div></div>
+        </div>
+        <div class="content">
+            
+            <div class="batch-card">
+                <div class="batch-title"><span>Batch #4092 - Apples</span> <span style="color: #2ea043">● Active</span></div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="dot dot-green"></div>
+                        <div class="time">Today, 08:30 AM</div>
+                        <div class="desc">Freshness stable. No intervention needed.</div>
+                        <div class="score">GRU Score: 9.2/10</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot dot-green"></div>
+                        <div class="time">Yesterday, 06:15 PM</div>
+                        <div class="desc">Initial scan logged upon entry.</div>
+                        <div class="score">GRU Score: 9.8/10</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="batch-card">
+                <div class="batch-title"><span>Batch #4088 - Bananas</span> <span style="color: #cf222e">● Critical</span></div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="dot dot-red"></div>
+                        <div class="time">Today, 09:00 AM</div>
+                        <div class="desc">Spoilage detected. Remove from shelf.</div>
+                        <div class="score">GRU Score: 2.1/10</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot dot-amber"></div>
+                        <div class="time">Yesterday, 08:00 AM</div>
+                        <div class="desc">Early bruising pattern identified by sequence model.</div>
+                        <div class="score">GRU Score: 6.5/10</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
