@@ -1,0 +1,4 @@
+model_key,model_name,accuracy,precision_macro,recall_macro,f1_macro,precision_weighted,recall_weighted,f1_weighted,total_parameters,trainable_parameters,model_size_mb,flops,inference_time_ms,per_class_csv,confusion_matrix_png
+efficientnetv2_s,EfficientNetV2-S,0.9808,0.9928,0.9833,0.9875,0.9816,0.9808,0.9805,20509526,20509526,78.24,5.70 GFLOPs,46.57,C:\NNDL\FreshGuard-AI\results\per_class\efficientnetv2_s.csv,C:\NNDL\FreshGuard-AI\results\plots\efficientnetv2_s_confusion_matrix.png
+convnext_tiny,ConvNeXt-Tiny,0.9423,0.9516,0.9682,0.9589,0.9441,0.9423,0.9424,28020070,28020070,106.89,0.64 GFLOPs,50.35,C:\NNDL\FreshGuard-AI\results\per_class\convnext_tiny.csv,C:\NNDL\FreshGuard-AI\results\plots\convnext_tiny_confusion_matrix.png
+mobilevit,MobileViT,0.9423,0.9504,0.9682,0.9558,0.951,0.9423,0.9439,5104550,5104550,19.47,1.70 GFLOPs,36.74,C:\NNDL\FreshGuard-AI\results\per_class\mobilevit.csv,C:\NNDL\FreshGuard-AI\results\plots\mobilevit_confusion_matrix.png

@@ -1,0 +1,18 @@
+{
+    "model_key": "mobilevit",
+    "model_name": "MobileViT",
+    "accuracy": 0.9423,
+    "precision_macro": 0.9504,
+    "recall_macro": 0.9682,
+    "f1_macro": 0.9558,
+    "precision_weighted": 0.951,
+    "recall_weighted": 0.9423,
+    "f1_weighted": 0.9439,
+    "total_parameters": 5104550,
+    "trainable_parameters": 5104550,
+    "model_size_mb": 19.47,
+    "flops": "1.70 GFLOPs",
+    "inference_time_ms": 36.74,
+    "per_class_csv": "C:\\NNDL\\FreshGuard-AI\\results\\per_class\\mobilevit.csv",
+    "confusion_matrix_png": "C:\\NNDL\\FreshGuard-AI\\results\\plots\\mobilevit_confusion_matrix.png"
+}
