@@ -1,0 +1,9 @@
+{
+    "total_images": 900,
+    "exact_sha256_duplicates": 0,
+    "unique_physical_fruit_groups": 78,
+    "train_count": 624,
+    "val_count": 224,
+    "test_count": 52,
+    "group_leakage_count": 0
+}
