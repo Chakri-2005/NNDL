@@ -94,3 +94,17 @@ if __name__ == "__main__":
     train_loader, val_loader, test_loader, classes = get_dataloaders()
     print(f"Loaded Dataloaders | Classes: {classes}")
     print(f"Train batches: {len(train_loader)} | Val batches: {len(val_loader)} | Test batches: {len(test_loader)}")
+
+
+# Convenience exports and backwards compatibility aliases
+CLASS_NAMES = config.CLASS_NAMES
+NUM_CLASSES = config.NUM_CLASSES
+CLASS_TO_IDX = config.CLASS_TO_IDX
+INVERSE_CLASS_MAPPING = config.IDX_TO_CLASS
+FreshGuardDataset = FreshnessDataset
+
+def get_eval_transforms():
+    return get_transforms()[1]
+
+def get_train_transforms():
+    return get_transforms()[0]

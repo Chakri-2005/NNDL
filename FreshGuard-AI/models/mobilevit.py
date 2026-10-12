@@ -43,3 +43,6 @@ if __name__ == "__main__":
     x = torch.randn(2, 3, 224, 224)
     out = m(x)
     print("MobileViT output shape:", out.shape)
+
+# Alias for compatibility
+get_mobilevit_s = get_mobilevit
