@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Scan from './pages/Scan';
 import UploadPredict from './pages/UploadPredict';
 import Dashboard from './pages/Dashboard';
-
+import GANLaboratory from './pages/GANLaboratory';
 import HistoryPage from './pages/History';
 import Research from './pages/Research';
 import About from './pages/About';
@@ -23,6 +23,7 @@ function App() {
             <Route path="/upload" element={<UploadPredict />} />
 
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/gan-lab" element={<GANLaboratory />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/research" element={<Research />} />
             <Route path="/about" element={<About />} />

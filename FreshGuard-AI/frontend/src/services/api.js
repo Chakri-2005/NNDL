@@ -39,3 +39,32 @@ export const compareModels = async (imageFile) => {
   });
   return res.data;
 };
+
+// ── GAN Laboratory API ───────────────────────────────────────────────────────
+
+/** Fetch all three GAN metrics in one call */
+export const getGanAll = async () => {
+  const res = await api.get('/gan/all');
+  return res.data;
+};
+
+/** Fetch lean comparison summary (FID, KID, diversity, latency) for all GANs */
+export const getGanSummary = async () => {
+  const res = await api.get('/gan/summary');
+  return res.data;
+};
+
+/** Fetch full metrics for one specific GAN */
+export const getGanMetrics = async (modelKey) => {
+  const res = await api.get(`/gan/${modelKey}/metrics`);
+  return res.data;
+};
+
+/** Build URL for the synthetic samples grid image (served directly) */
+export const getGanSamplesUrl = (modelKey) =>
+  `${API_URL}/gan/${modelKey}/samples`;
+
+/** Build URL for the training loss curve image (served directly) */
+export const getGanLossCurveUrl = (modelKey) =>
+  `${API_URL}/gan/${modelKey}/loss_curve`;
+

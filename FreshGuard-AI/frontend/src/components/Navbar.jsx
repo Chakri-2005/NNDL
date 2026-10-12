@@ -20,6 +20,7 @@ const Navbar = () => {
           <Link to="/upload" className={`nav-link ${isActive('/upload') ? 'active' : ''}`}>Upload & Predict</Link>
 
           <Link to="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}>Dashboard</Link>
+          <Link to="/gan-lab" className={`nav-link ${isActive('/gan-lab') ? 'active' : ''}`}>🧬 GAN Lab</Link>
           <Link to="/history" className={`nav-link ${isActive('/history') ? 'active' : ''}`}>History</Link>
           <Link to="/research" className={`nav-link ${isActive('/research') ? 'active' : ''}`}>Research</Link>
           <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`}>About</Link>
