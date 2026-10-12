@@ -1,0 +1,30 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\91889\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\NNDL\FreshGuard-AI
+plugins: anyio-4.14.2, cov-7.1.0
+collecting ... collected 21 items
+
+tests/test_api_integration.py::test_health_endpoint PASSED               [  4%]
+tests/test_api_integration.py::test_models_endpoint PASSED               [  9%]
+tests/test_api_integration.py::test_metrics_endpoint PASSED              [ 14%]
+tests/test_api_integration.py::test_predict_endpoint_missing_image PASSED [ 19%]
+tests/test_api_integration.py::test_predict_endpoint_with_valid_image PASSED [ 23%]
+tests/test_api_integration.py::test_compare_endpoint_with_valid_image PASSED [ 28%]
+tests/test_data_pipeline.py::test_class_names_and_indices PASSED         [ 33%]
+tests/test_data_pipeline.py::test_eval_transforms_output_properties PASSED [ 38%]
+tests/test_data_pipeline.py::test_train_transforms_data_augmentation PASSED [ 42%]
+tests/test_data_pipeline.py::test_missing_image_handling PASSED          [ 47%]
+tests/test_data_pipeline.py::test_dataset_splits_exist_and_valid PASSED  [ 52%]
+tests/test_data_pipeline.py::test_test_split_isolation PASSED            [ 57%]
+tests/test_model_inference.py::test_model_architecture_output_shape[efficientnetv2_s-get_efficientnetv2_s-efficientnetv2_s_best.pth] PASSED [ 61%]
+tests/test_model_inference.py::test_model_architecture_output_shape[convnext_tiny-get_convnext_tiny-convnext_tiny_best.pth] PASSED [ 66%]
+tests/test_model_inference.py::test_model_architecture_output_shape[mobilevit-get_mobilevit-mobilevit_best.pth] PASSED [ 71%]
+tests/test_model_inference.py::test_checkpoint_loading_and_inference[efficientnetv2_s-get_efficientnetv2_s-efficientnetv2_s_best.pth] PASSED [ 76%]
+tests/test_model_inference.py::test_checkpoint_loading_and_inference[convnext_tiny-get_convnext_tiny-convnext_tiny_best.pth] PASSED [ 80%]
+tests/test_model_inference.py::test_checkpoint_loading_and_inference[mobilevit-get_mobilevit-mobilevit_best.pth] PASSED [ 85%]
+tests/test_model_inference.py::test_confidence_threshold_abstention PASSED [ 90%]
+tests/test_regression.py::test_prediction_reproducibility_on_fixed_seed PASSED [ 95%]
+tests/test_regression.py::test_no_grad_inference_does_not_modify_weights PASSED [100%]
+
+============================= 21 passed in 4.61s ==============================

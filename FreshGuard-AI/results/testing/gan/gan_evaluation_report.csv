@@ -1,0 +1,15 @@
+Metric,Value
+timestamp,2026-10-12 12:29:38
+architecture,Conditional DCGAN (cGAN)
+latent_dim,100
+image_resolution,64x64
+classes_conditioned,6
+total_evaluated_samples,96
+fid_score,397.75
+kid_score,5.57741
+mean_perceptual_diversity_bits,24.76
+classifier_consistency_score,0.1771
+generation_latency_ms_per_image,0.89
+final_g_loss,0.9468
+final_d_loss,0.5811
+mode_collapse_detected,False

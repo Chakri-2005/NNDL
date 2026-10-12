@@ -1,0 +1,2 @@
+model_key,model_name,image_path,predicted_class,confidence,explain_class,method,status,original_path,heatmap_path,overlay_path
+efficientnetv2_s,EfficientNetV2-S,data/val/Banana_Fresh/item_000_frame_00.jpg,Banana_Fresh,0.87,Banana_Fresh,Grad-CAM (hook-based),OK,results/testing/explainability/test_cam.png\item_000_frame_00_efficientnetv2_s_original.png,results/testing/explainability/test_cam.png\item_000_frame_00_efficientnetv2_s_heatmap.png,results/testing/explainability/test_cam.png\item_000_frame_00_efficientnetv2_s_overlay.png

@@ -1,0 +1,4 @@
+model_key,model_name,mean_ms,std_ms,min_ms,max_ms,median_ms,num_runs,batch_size,device,timing_method,total_images,elapsed_sec,throughput_imgs_per_sec
+efficientnetv2_s,EfficientNetV2-S,119.925,12.825,111.62,199.261,117.307,50,32,cpu,time.perf_counter (wall-clock),52,3.561,14.6
+convnext_tiny,ConvNeXt-Tiny,99.49,11.751,86.402,139.809,96.345,50,32,cpu,time.perf_counter (wall-clock),52,3.598,14.45
+mobilevit,MobileViT-S,71.774,16.438,64.444,177.074,67.575,50,32,cpu,time.perf_counter (wall-clock),52,2.723,19.1
