@@ -1,0 +1,18 @@
+Metric,Value
+model_key,efficientnetv2_s
+gan_id,efficientnet_gan
+display_name,EfficientNetV2-S Dedicated GAN
+paired_classifier,efficientnetv2_s
+latent_dim,100
+epochs_trained,5
+train_duration_sec,102.98
+fid_score,424.43
+kid_score,5.90329
+classifier_consistency,0.2188
+mean_perceptual_diversity_bits,24.29
+mode_collapse_detected,False
+latency_ms_per_image,1.91
+throughput_imgs_per_sec,524.3
+checkpoint_file,efficientnet_gan_best.pth
+evaluated_samples,96
+timestamp,2026-10-12 21:17:34

@@ -1,0 +1,18 @@
+Metric,Value
+model_key,mobilevit_s
+gan_id,mobilevit_gan
+display_name,MobileViT-S Dedicated GAN
+paired_classifier,mobilevit_s
+latent_dim,80
+epochs_trained,5
+train_duration_sec,36.75
+fid_score,413.7
+kid_score,6.87962
+classifier_consistency,0.3854
+mean_perceptual_diversity_bits,13.65
+mode_collapse_detected,False
+latency_ms_per_image,2.25
+throughput_imgs_per_sec,444.8
+checkpoint_file,mobilevit_gan_best.pth
+evaluated_samples,96
+timestamp,2026-10-12 21:18:00

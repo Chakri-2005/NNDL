@@ -1,0 +1,4 @@
+gan_id,display_name,paired_classifier,latent_dim,fid_score,kid_score,classifier_consistency,mean_perceptual_diversity_bits,latency_ms_per_image,throughput_imgs_per_sec
+efficientnet_gan,EfficientNetV2-S Dedicated GAN,efficientnetv2_s,100,424.43,5.90329,0.2188,24.29,1.91,524.3
+convnext_gan,ConvNeXt-Tiny Dedicated GAN,convnext_tiny,128,368.92,4.96845,0.1979,20.11,3.98,251.2
+mobilevit_gan,MobileViT-S Dedicated GAN,mobilevit_s,80,413.7,6.87962,0.3854,13.65,2.25,444.8

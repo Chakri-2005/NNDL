@@ -1,0 +1,18 @@
+Metric,Value
+model_key,convnext_tiny
+gan_id,convnext_gan
+display_name,ConvNeXt-Tiny Dedicated GAN
+paired_classifier,convnext_tiny
+latent_dim,128
+epochs_trained,5
+train_duration_sec,192.67
+fid_score,368.92
+kid_score,4.96845
+classifier_consistency,0.1979
+mean_perceptual_diversity_bits,20.11
+mode_collapse_detected,False
+latency_ms_per_image,3.98
+throughput_imgs_per_sec,251.2
+checkpoint_file,convnext_gan_best.pth
+evaluated_samples,96
+timestamp,2026-10-12 21:17:47

@@ -1,0 +1,27 @@
+{
+  "model_key": "convnext_tiny",
+  "gan_id": "convnext_gan",
+  "display_name": "ConvNeXt-Tiny Dedicated GAN",
+  "paired_classifier": "convnext_tiny",
+  "latent_dim": 128,
+  "epochs_trained": 5,
+  "train_duration_sec": 192.67,
+  "fid_score": 368.92,
+  "kid_score": 4.96845,
+  "classifier_consistency": 0.1979,
+  "mean_perceptual_diversity_bits": 20.11,
+  "mode_collapse_detected": false,
+  "latency_ms_per_image": 3.98,
+  "throughput_imgs_per_sec": 251.2,
+  "diversity_by_class": {
+    "Apple_Fresh": 20.15,
+    "Apple_Rotten": 17.55,
+    "Banana_Fresh": 22.5,
+    "Banana_Rotten": 19.65,
+    "Orange_Fresh": 18.73,
+    "Orange_Rotten": 22.05
+  },
+  "checkpoint_file": "convnext_gan_best.pth",
+  "evaluated_samples": 96,
+  "timestamp": "2026-10-12 21:17:47"
+}
