@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend.routes.prediction_routes import prediction_bp
 from backend.routes.model_routes import model_bp
 from backend.routes.metrics_routes import metrics_bp
+from backend.routes.gan_routes import gan_bp
 from backend.services.model_manager import ModelManager
 
 def create_app():
@@ -22,6 +23,7 @@ def create_app():
     app.register_blueprint(prediction_bp, url_prefix='/api')
     app.register_blueprint(model_bp, url_prefix='/api')
     app.register_blueprint(metrics_bp, url_prefix='/api')
+    app.register_blueprint(gan_bp, url_prefix='/api')
 
     @app.route('/api/health')
     def health():
